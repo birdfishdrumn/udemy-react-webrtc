@@ -15,7 +15,8 @@ async function getMedia():Promise<MediaStream | undefined> {
    return await navigator.mediaDevices.getUserMedia(constraints);
     /* ストリームを使用 */
   } catch(err) {
-    /* エラーを処理 */
+      /* エラーを処理 */
+      console.error(err)
   }
 }
 getMedia()
