@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button} from "@material-ui/core"
 
 type Constrains ={
     audio: boolean;
@@ -22,8 +23,9 @@ async function getMedia():Promise<MediaStream | undefined> {
 getMedia()
 
 function App() {
-    const data:string[] = ["huuta","mini"]
-    return <div > こんにちは
+
+    return <div >
+        <Button color="primary" variant="contained">click</Button>
 
     </div>;
 }
