@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState }from 'react';
 import { Button } from "@material-ui/core"
 import InputFormLocal from "./InputFormLocal";
+import InputFormRemote from "./InputFormRemote";
 
 type Constrains ={
     audio: boolean;
@@ -24,9 +25,17 @@ async function getMedia():Promise<MediaStream | undefined> {
 getMedia()
 
 function App() {
-
+    const [localPeerName,setLocalPeerName] = useState<string>("")
+    const [remotePeerName,setRemotePeerName] = useState<string>("")
     return <div >
-        <InputFormLocal/>
+        <InputFormLocal
+            localPeerName={localPeerName}
+            setLocalPeerName = {setLocalPeerName}
+        />
+        <InputFormRemote
+            remotePeerName={remotePeerName}
+            setRemotePeerName={setRemotePeerName}
+        />
 
     </div>;
 }

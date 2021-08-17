@@ -42,26 +42,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignIn({ rtcClient }:any) {
-  const label = 'あなたの名前';
+  const label = '相手の名前';
   const classes = useStyles();
   const [disabled, setDisabled] = useState<boolean>(true);
   const [name, setName] = useState<string>('');
   const [isComposed, setIsComposed] = useState<boolean>(false);
 
-  useEffect(() => {
-    const disabled = name === '';
-    setDisabled(disabled);
-  }, [name]);
+  // useEffect(() => {
+  //   const disabled = name === '';
+  //   setDisabled(disabled);
+  // }, [name]);
 
-  const initializeLocalPeer = useCallback(
-    async (e) => {
-      await rtcClient.startListening(name);
-      e.preventDefault();
-    },
-    [name, rtcClient]
-  );
+  // const initializeLocalPeer = useCallback(
+  //   async (e) => {
+  //     await rtcClient.startListening(name);
+  //     e.preventDefault();
+  //   },
+  //   [name, rtcClient]
+  // );
 
-  if (rtcClient.localPeerName !== '') return <></>;
+  // if (rtcClient.localPeerName !== '') return <></>;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -78,13 +78,13 @@ export default function SignIn({ rtcClient }:any) {
             margin="normal"
             name="name"
             onChange={(e) => setName(e.target.value)}
-            onCompositionEnd={() => setIsComposed(false)}
-            onCompositionStart={() => setIsComposed(true)}
-            onKeyDown={async (e:any) => {
-              if (isComposed) return;
-              if (e.target.value === '') return;
-              if (e.key === 'Enter') await initializeLocalPeer(e);
-            }}
+            // onCompositionEnd={() => setIsComposed(false)}
+            // onCompositionStart={() => setIsComposed(true)}
+            // onKeyDown={async (e:any) => {
+            //   if (isComposed) return;
+            //   if (e.target.value === '') return;
+            //   if (e.key === 'Enter') await initializeLocalPeer(e);
+            // }}
             required
             value={name}
             variant="outlined"
@@ -94,7 +94,7 @@ export default function SignIn({ rtcClient }:any) {
             color="primary"
             disabled={disabled}
             fullWidth
-            onClick={async (e) => await initializeLocalPeer(e)}
+            // onClick={async (e) => await initializeLocalPeer(e)}
             type="submit"
             variant="contained"
           >
