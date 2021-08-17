@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button} from "@material-ui/core"
+import { Button } from "@material-ui/core"
+import InputFormLocal from "./InputFormLocal";
 
 type Constrains ={
     audio: boolean;
@@ -25,7 +26,7 @@ getMedia()
 function App() {
 
     return <div >
-        <Button color="primary" variant="contained">click</Button>
+        <InputFormLocal/>
 
     </div>;
 }
