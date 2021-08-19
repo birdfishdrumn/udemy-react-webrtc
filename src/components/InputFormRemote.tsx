@@ -41,7 +41,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn({ rtcClient }:any) {
+interface Props {
+  remotePeerName: string;
+  setRemotePeerName: React.Dispatch<React.SetStateAction<string>>
+}
+
+export default function SignIn({ remotePeerName, setRemotePeerName }: Props) {
   const label = '相手の名前';
   const classes = useStyles();
   const [disabled, setDisabled] = useState<boolean>(true);
