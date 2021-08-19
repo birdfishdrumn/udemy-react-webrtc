@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
-function Copyright() {
+function Copyright(): JSX.Element {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
@@ -40,28 +40,35 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
 }));
+interface Props {
+  localPeerName: string;
+  setLocalPeerName: React.Dispatch<React.SetStateAction<string>>
+}
 
-export default function SignIn({ rtcClient }:any) {
+export default function SignIn({ localPeerName, setLocalPeerName }: Props) {
   const label = 'あなたの名前';
   const classes = useStyles();
   const [disabled, setDisabled] = useState<boolean>(true);
   const [name, setName] = useState<string>('');
   const [isComposed, setIsComposed] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   const disabled = name === '';
-  //   setDisabled(disabled);
-  // }, [name]);
+  useEffect(() => {
+    const disabled = name === '';
+    setDisabled(disabled);
+  }, [name]);
 
-  // const initializeLocalPeer = useCallback(
-  //   async (e) => {
-  //     await rtcClient.startListening(name);
-  //     e.preventDefault();
-  //   },
-  //   [name, rtcClient]
-  // );
+  const initializeLocalPeer = useCallback(
+    async (e) => {
 
-  // if (rtcClient.localPeerName !== '') return <></>;
+      console.log("success")
+      // await rtcClient.startListening(name);
+      setLocalPeerName(name)
+      e.preventDefault()
+    },
+    [name, setLocalPeerName]
+  );
+
+  if (localPeerName !== '') return <></>;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -78,13 +85,21 @@ export default function SignIn({ rtcClient }:any) {
             margin="normal"
             name="name"
             onChange={(e) => setName(e.target.value)}
-            // onCompositionEnd={() => setIsComposed(false)}
-            // onCompositionStart={() => setIsComposed(true)}
-            // onKeyDown={async (e:any) => {
-            //   if (isComposed) return;
-            //   if (e.target.value === '') return;
-            //   if (e.key === 'Enter') await initializeLocalPeer(e);
-            // }}
+
+            onCompositionEnd={() => setIsComposed(false)}
+            onCompositionStart={() => setIsComposed(true)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement> | any) => {
+
+              if (e.target.defaultValue === "") return
+              console.log({ e })
+              if (isComposed) return
+              if (e.key === "Enter") {
+
+                initializeLocalPeer(e)
+
+              }
+
+            }}
             required
             value={name}
             variant="outlined"
@@ -94,7 +109,10 @@ export default function SignIn({ rtcClient }:any) {
             color="primary"
             disabled={disabled}
             fullWidth
-            // onClick={async (e) => await initializeLocalPeer(e)}
+            onClick={(e) => {
+              initializeLocalPeer(e)
+
+            }}
             type="submit"
             variant="contained"
           >
