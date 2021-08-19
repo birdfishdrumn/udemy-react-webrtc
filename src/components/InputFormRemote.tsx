@@ -42,31 +42,33 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
+  localPeerName: string;
   remotePeerName: string;
   setRemotePeerName: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default function SignIn({ remotePeerName, setRemotePeerName }: Props) {
+export default function SignIn({ localPeerName, remotePeerName, setRemotePeerName }: Props) {
   const label = '相手の名前';
   const classes = useStyles();
   const [disabled, setDisabled] = useState<boolean>(true);
   const [name, setName] = useState<string>('');
   const [isComposed, setIsComposed] = useState<boolean>(false);
 
-  // useEffect(() => {
-  //   const disabled = name === '';
-  //   setDisabled(disabled);
-  // }, [name]);
+  useEffect(() => {
+    const disabled = name === '';
+    setDisabled(disabled);
+  }, [name]);
 
-  // const initializeLocalPeer = useCallback(
-  //   async (e) => {
-  //     await rtcClient.startListening(name);
-  //     e.preventDefault();
-  //   },
-  //   [name, rtcClient]
-  // );
+  const initializeLocalPeer = useCallback(
+    async (e) => {
+      setRemotePeerName(name)
+      e.preventDefault()
+    },
+    [name, setRemotePeerName]
+  );
 
-  // if (rtcClient.localPeerName !== '') return <></>;
+  if (localPeerName === '') return <></>;
+  if (remotePeerName !== '') return <></>;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -83,13 +85,13 @@ export default function SignIn({ remotePeerName, setRemotePeerName }: Props) {
             margin="normal"
             name="name"
             onChange={(e) => setName(e.target.value)}
-            // onCompositionEnd={() => setIsComposed(false)}
-            // onCompositionStart={() => setIsComposed(true)}
-            // onKeyDown={async (e:any) => {
-            //   if (isComposed) return;
-            //   if (e.target.value === '') return;
-            //   if (e.key === 'Enter') await initializeLocalPeer(e);
-            // }}
+            onCompositionEnd={() => setIsComposed(false)}
+            onCompositionStart={() => setIsComposed(true)}
+            onKeyDown={async (e: any) => {
+              if (isComposed) return;
+              if (e.target.value === '') return;
+              if (e.key === 'Enter') await initializeLocalPeer(e);
+            }}
             required
             value={name}
             variant="outlined"
@@ -99,7 +101,7 @@ export default function SignIn({ remotePeerName, setRemotePeerName }: Props) {
             color="primary"
             disabled={disabled}
             fullWidth
-            // onClick={async (e) => await initializeLocalPeer(e)}
+            onClick={async (e) => await initializeLocalPeer(e)}
             type="submit"
             variant="contained"
           >
