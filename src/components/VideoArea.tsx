@@ -33,7 +33,7 @@ const VideoArea: React.VFC<Props> = ({ localPeerName, remotePeerName }) => {
           <VideoLocal name={localPeerName}/>
         </Grid>
             <Grid item xs={12} sm={6}>
-                   <VideoRemote/>
+                   <VideoRemote name={remotePeerName}/>
         </Grid>
 
 
