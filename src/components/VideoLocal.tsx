@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react'
-
+import Video from "./Video";
 type Constrains = {
     audio: boolean;
     video: boolean | {
@@ -8,7 +8,12 @@ type Constrains = {
     };
 }
 
-const VideoLocal = () => {
+interface Props {
+  name: string
+
+}
+
+const VideoLocal:React.VFC<Props> = ({name}) => {
   const videoRef = useRef()
   const currentVideoRef:any = videoRef.current
 
@@ -32,9 +37,7 @@ const VideoLocal = () => {
   }, [currentVideoRef])
 
   return (
-    <div>
-
-    </div>
+    <Video isLocal={true} name={name} videoRef={videoRef}/>
   )
 }
 
