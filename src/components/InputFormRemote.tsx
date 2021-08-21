@@ -7,6 +7,7 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import RtcClient from "src/utils/RtcClient"
 
 function Copyright() {
   return (
@@ -42,12 +43,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  localPeerName: string;
-  remotePeerName: string;
-  setRemotePeerName: React.Dispatch<React.SetStateAction<string>>
+  rtcClient:RtcClient
 }
 
-export default function SignIn({ localPeerName, remotePeerName, setRemotePeerName }: Props) {
+export default function SignIn({ rtcClient}: Props) {
   const label = '相手の名前';
   const classes = useStyles();
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -61,14 +60,14 @@ export default function SignIn({ localPeerName, remotePeerName, setRemotePeerNam
 
   const initializeLocalPeer = useCallback(
     async (e) => {
-      setRemotePeerName(name)
+      rtcClient.remotePeerName = name
       e.preventDefault()
     },
-    [name, setRemotePeerName]
+    [name, rtcClient]
   );
 
-  if (localPeerName === '') return <></>;
-  if (remotePeerName !== '') return <></>;
+  if (rtcClient.localPeerName === '') return <></>;
+  if (rtcClient.remotePeerName !== '') return <></>;
 
   return (
     <Container component="main" maxWidth="xs">
