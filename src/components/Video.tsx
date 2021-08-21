@@ -2,7 +2,7 @@ import React from 'react'
 
 interface Props {
   name: string;
-  videoRef: React.MutableRefObject<any>
+  videoRef: React.MutableRefObject<any> | null
   isLocal:boolean
 }
 
