@@ -1,4 +1,4 @@
-
+import FirebaseSignallingClient from "./FirebaseSignallingClient";
 type Constrains = {
     audio: boolean;
     video: boolean | {
@@ -12,13 +12,15 @@ export default class RtcClient {
   remotePeerName: string
   rtcPeerConnection: any
   _setRtcClient: (rtc: RtcClient) => any
-  mediaStream:MediaStream | null
+  mediaStream: MediaStream | null
+  firebaseSignallingClient:FirebaseSignallingClient
   constructor(setRtcClient:(rtc:RtcClient) => any) {
     const config = {
       iceServers: [{
           urls: "stun:stun.stunprotocol.org"}]
     };
     this.rtcPeerConnection = new RTCPeerConnection(config)
+    this.firebaseSignallingClient = new FirebaseSignallingClient()
     this.localPeerName = ""
     this.remotePeerName = ""
     this._setRtcClient = setRtcClient;
@@ -43,5 +45,10 @@ export default class RtcClient {
     this.localPeerName = localPeerName;
     this.setRtcClient()
     // ここにシグナリングサーバーをリッスンする処理を追加する。
+this.firebaseSignallingClient.database
+.ref(localPeerName).on("value", (snapshot) => {
+      const data = snapshot.val()
+    } ) //localPeernameをリッスンする
+
   }
 }
