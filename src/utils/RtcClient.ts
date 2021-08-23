@@ -1,3 +1,4 @@
+import React from "react";
 import FirebaseSignallingClient from "./FirebaseSignallingClient";
 type Constrains = {
     audio: boolean;
@@ -7,6 +8,7 @@ type Constrains = {
     };
 }
 
+
 export default class RtcClient {
   localPeerName: string
   remotePeerName: string
@@ -14,9 +16,11 @@ export default class RtcClient {
   _setRtcClient: (rtc: RtcClient) => any
   mediaStream: MediaStream | null
   firebaseSignallingClient: FirebaseSignallingClient
+  remoteVideoRef:React.MutableRefObject<null>
 
 
-  constructor(setRtcClient:(rtc:RtcClient) => any) {
+
+  constructor(remoteVideoRef:React.MutableRefObject<null>,setRtcClient:(rtc:RtcClient) => any) {
     const config = {
       iceServers: [{
           urls: "stun:stun.stunprotocol.org"}]
@@ -25,6 +29,7 @@ export default class RtcClient {
     this.firebaseSignallingClient = new FirebaseSignallingClient()
     this.localPeerName = ""
     this.remotePeerName = ""
+    this.remoteVideoRef = remoteVideoRef
     this._setRtcClient = setRtcClient;
     this.mediaStream = null
   }

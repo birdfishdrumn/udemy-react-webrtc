@@ -15,7 +15,7 @@ interface Props {
 }
 
 const VideoRemote:React.VFC<Props> = ({rtcClient}) => {
-  const videoRef = null
+  const videoRef = rtcClient.remoteVideoRef
 
 
   return (
