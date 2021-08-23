@@ -13,7 +13,8 @@ export const useRtcClient = () => {
 
   useEffect(() => {
     const init = async () => {
-           const client = new RtcClient(remoteVideoRef,setRtcClient)
+      const client = new RtcClient(remoteVideoRef, setRtcClient)
+      // 初回レンダリング時にsetMediaStreamメソッドが実行される。
       await client.setMediaStream()
       }
    init()

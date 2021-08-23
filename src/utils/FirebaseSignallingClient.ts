@@ -22,4 +22,21 @@ export default class FirebaseSignallingClient {
     this.localPeerName = "";
     this.remotePeerName = ""
   }
+
+    setPeerNames(localPeerName:string, remotePeerName:string) {
+    this.localPeerName = localPeerName;
+    this.remotePeerName = remotePeerName;
+    }
+
+  get targetRef() {
+     return  this.database.ref(this.remotePeerName)
+  }
+
+  async sendOffer(sessionDescription:RTCSessionDescription) {
+    await this.targetRef.set({
+      type: "offer",
+      sender: this.localPeerName,
+      sessionDescription,
+    })
+  }
 }

@@ -48,10 +48,11 @@ export default class RtcClient {
 
   }
 
+  // 初回にuseRtcClientフックにてuseEffectで実行される関数
   async setMediaStream() {
-    await this.getUserMedia()
-    this.addTracks()
-    this.setRtcClient()
+    await this.getUserMedia() // メディアストリームの設定
+    this.addTracks() //オーディオトラックの設定
+    this.setRtcClient() //rtcClientの更新
   }
 
 
@@ -76,33 +77,73 @@ export default class RtcClient {
       }
   };
 
+  async offer() {
+    const sessionDescription = await this.createOffer()
+    if (sessionDescription) {
+         await  this.setLocalDescription(sessionDescription)
+    }
+    await this.sendOffer()
+  }
+
+  async createOffer() {
+    try {
+          return await this.rtcPeerConnection.createOffer()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  async setLocalDescription(sessionDescription: RTCSessionDescriptionInit) {
+    try {
+        await  this.rtcPeerConnection.setLocalDescription(sessionDescription)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // 二つの名前が揃ったらオファーを送る
+  async sendOffer() {
+    await this.firebaseSignallingClient.setPeerNames(
+      this.localPeerName,
+      this.remotePeerName
+    )
+
+    // console.log(await this.rtcPeerConnection.localDescription?.toJSON())
+    await this.firebaseSignallingClient.sendOffer(this.localDescription)
+  }
+
   setOntrack() {
-    this.rtcPeerConnection.ontrack = (rtcTrackEvent) => {
+    this.rtcPeerConnection.ontrack = (rtcTrackEvent: RTCTrackEvent) => {
       if (rtcTrackEvent.track.kind === "video") return;
-      const remoteMediaStream = rtcTrackEvent.streams[0]
+      const remoteMediaStream: MediaStream = rtcTrackEvent.streams[0]
       this.remoteVideoRef.current.srcObject = remoteMediaStream;
       this.setRtcClient()
     }
 
     this.setRtcClient()
   }
-
-  connect(remotePeerName:string) {
+ //　相手の名前が入力されたら実行される関数 inputFormRemoteより
+  async connect(remotePeerName:string) {
     this.remotePeerName = remotePeerName
-    this.setOnicecandidateCallback()
-    this.setOntrack();
-    this.setRtcClient()
+    this.setOnicecandidateCallback() //candidateを送信
+    this.setOntrack(); //remoteVideoRefのcurrentをremoteMediaStreamに更新
+    await this.offer() //offerを送信する処理
+    this.setRtcClient() //rtcClientの情報を更新
+  }
+
+  get localDescription() {
+    return this.rtcPeerConnection.localDescription?.toJSON()
   }
 
   setOnicecandidateCallback() {
-    this.rtcPeerConnection.onicecandidate = (candidate) => {
+    this.rtcPeerConnection.onicecandidate = (candidate:RTCPeerConnectionIceEvent) => {
       if (candidate) {
         console.log({candidate})
       }
     }
   }
 
-
+//最初の名前が入力されたら実行される関数 inputFormLocalから実行
   startListening(localPeerName:string) {
     this.localPeerName = localPeerName;
     this.setRtcClient()
@@ -113,4 +154,9 @@ this.firebaseSignallingClient.database
     } ) //localPeernameをリッスンする
 
   };
+
+  setPeerNames(localPeerName:string, remotePeerName:string) {
+    this.localPeerName = localPeerName
+    this.remotePeerName = remotePeerName
+  }
 }
