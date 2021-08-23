@@ -13,7 +13,9 @@ export default class RtcClient {
   rtcPeerConnection: any
   _setRtcClient: (rtc: RtcClient) => any
   mediaStream: MediaStream | null
-  firebaseSignallingClient:FirebaseSignallingClient
+  firebaseSignallingClient: FirebaseSignallingClient
+
+
   constructor(setRtcClient:(rtc:RtcClient) => any) {
     const config = {
       iceServers: [{
@@ -40,6 +42,31 @@ export default class RtcClient {
     }
 
   }
+
+  async setMediaStream() {
+    await this.getUserMedia()
+    this.addTracks()
+    this.setRtcClient()
+  }
+
+
+
+  addTracks() {
+    this.addAudioTrack()
+     this.addVideoTrack()
+  }
+
+  addAudioTrack() {
+    console.log({ tracks: this.mediaStream?.getAudioTracks() })
+    const audioTrack:MediaStreamTrack | undefined = this.mediaStream?.getAudioTracks()[0]
+    this.rtcPeerConnection.addTrack(audioTrack,this.mediaStream)
+   }
+
+    addVideoTrack() {
+    const videoTrack:MediaStreamTrack | undefined = this.mediaStream?.getVideoTracks()[0]
+    this.rtcPeerConnection.addTrack(videoTrack,this.mediaStream)
+    }
+
 
   startListening(localPeerName:string) {
     this.localPeerName = localPeerName;
