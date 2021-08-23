@@ -92,7 +92,7 @@ export default class RtcClient {
       console.error(e)
     }
   }
-
+  //  自分のメソッドを出力する為の処理
   async setLocalDescription(sessionDescription: RTCSessionDescriptionInit) {
     try {
         await  this.rtcPeerConnection.setLocalDescription(sessionDescription)
@@ -122,6 +122,22 @@ export default class RtcClient {
 
     this.setRtcClient()
   }
+
+  async answer(sender: string, sessionDescription: RTCSessionDescription) {
+    try {
+      this.remotePeerName = sender;
+     this.setOnicecandidateCallback() //candidateを送信
+    this.setOntrack(); //remoteVideoRefのcurrentをremoteMediaStreamに更新
+      await this.setRemoteDescription(sessionDescription)
+      const answer: RTCSessionDescriptionInit = await this.rtcPeerConnection.createAnswer()
+      await this.rtcPeerConnection.setLocalDescription(answer)
+      await this.sendAnswer()
+    } catch(e) {
+      console.error(e)
+    }
+   }
+
+
  //　相手の名前が入力されたら実行される関数 inputFormRemoteより
   async connect(remotePeerName:string) {
     this.remotePeerName = remotePeerName
@@ -131,7 +147,21 @@ export default class RtcClient {
     this.setRtcClient() //rtcClientの情報を更新
   }
 
+  async setRemoteDescription(sessionDescription:RTCSessionDescription) {
+    await this.rtcPeerConnection.setRemoteDescription(sessionDescription)
+  }
+
+  async sendAnswer() {
+    this.firebaseSignallingClient.setPeerNames(
+      this.localPeerName,
+      this.remotePeerName
+    )
+
+    await this.firebaseSignallingClient.sendAnswer(this.localDescription)
+  }
+
   get localDescription() {
+    // 誰が送信したかの詳細な情報が載っている。
     return this.rtcPeerConnection.localDescription?.toJSON()
   }
 
@@ -149,8 +179,19 @@ export default class RtcClient {
     this.setRtcClient()
     // ここにシグナリングサーバーをリッスンする処理を追加する。
 this.firebaseSignallingClient.database
-.ref(localPeerName).on("value", (snapshot) => {
-      const data = snapshot.val()
+.ref(localPeerName).on("value", async(snapshot) => {
+  const data = snapshot.val()
+  if (data === null) return
+  const { sender, sessionDescription, type } = data
+  switch (type) {
+    case "offer":
+      // answerを実行
+      await  this.answer(sender,sessionDescription)
+      break
+    default:
+      break;
+    }
+  console.log({data})
     } ) //localPeernameをリッスンする
 
   };
