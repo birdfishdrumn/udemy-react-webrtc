@@ -12,11 +12,11 @@ type Constrains = {
 export default class RtcClient {
   localPeerName: string
   remotePeerName: string
-  rtcPeerConnection: any
+  rtcPeerConnection: RTCPeerConnection
   _setRtcClient: (rtc: RtcClient) => any
   mediaStream: MediaStream | null
   firebaseSignallingClient: FirebaseSignallingClient
-  remoteVideoRef:React.MutableRefObject<null>
+  remoteVideoRef:React.MutableRefObject<any>
 
 
 
@@ -63,14 +63,44 @@ export default class RtcClient {
 
   addAudioTrack() {
     console.log({ tracks: this.mediaStream?.getAudioTracks() })
-    const audioTrack:MediaStreamTrack | undefined = this.mediaStream?.getAudioTracks()[0]
-    this.rtcPeerConnection.addTrack(audioTrack,this.mediaStream)
-   }
+    const audioTrack: MediaStreamTrack | undefined = this.mediaStream?.getAudioTracks()[0]
+    if (audioTrack && this.mediaStream) {
+      this.rtcPeerConnection.addTrack(audioTrack, this.mediaStream)
+    }
+  };
 
     addVideoTrack() {
-    const videoTrack:MediaStreamTrack | undefined = this.mediaStream?.getVideoTracks()[0]
-    this.rtcPeerConnection.addTrack(videoTrack,this.mediaStream)
+      const videoTrack: MediaStreamTrack | undefined = this.mediaStream?.getVideoTracks()[0]
+      if (videoTrack && this.mediaStream) {
+            this.rtcPeerConnection.addTrack(videoTrack,this.mediaStream)
+      }
+  };
+
+  setOntrack() {
+    this.rtcPeerConnection.ontrack = (rtcTrackEvent) => {
+      if (rtcTrackEvent.track.kind === "video") return;
+      const remoteMediaStream = rtcTrackEvent.streams[0]
+      this.remoteVideoRef.current.srcObject = remoteMediaStream;
+      this.setRtcClient()
     }
+
+    this.setRtcClient()
+  }
+
+  connect(remotePeerName:string) {
+    this.remotePeerName = remotePeerName
+    this.setOnicecandidateCallback()
+    this.setOntrack();
+    this.setRtcClient()
+  }
+
+  setOnicecandidateCallback() {
+    this.rtcPeerConnection.onicecandidate = (candidate) => {
+      if (candidate) {
+        console.log({candidate})
+      }
+    }
+  }
 
 
   startListening(localPeerName:string) {
@@ -82,5 +112,5 @@ this.firebaseSignallingClient.database
       const data = snapshot.val()
     } ) //localPeernameをリッスンする
 
-  }
+  };
 }
