@@ -1,32 +1,19 @@
-import React, { useState,useReducer } from 'react';
+import React, { useState,useReducer,useEffect } from 'react';
 import { Button } from "@material-ui/core"
-import InputFormLocal from "./InputFormLocal";
-import InputFormRemote from "./InputFormRemote";
+import InputForms from "./InputForms";
 import VideoArea from "./VideoArea";
-import  RtcClient  from "src/utils/RtcClient";
+import RtcClient from "src/utils/RtcClient";
+import {useRtcClient} from "src/components/hooks/useRtcClient"
 
 
 
 function App() {
+    const rtcClient = useRtcClient()
     // 強制的に際レンダリングさせる為のレデューサー
-     const [rtcClient,_setRtcClient] = useState<RtcClient>(new RtcClient());
-    const [,forceRender] = useReducer((boolean)=> !boolean,false)
-
-    const setRtcClient = (rtcClient:RtcClient) => {
-        _setRtcClient(rtcClient)
-        forceRender()
-    }
-    console.log(rtcClient)
+    //  const [rtcClient,_setRtcClient] = useState<RtcClient>(new RtcClient());
 
     return <div >
-        <InputFormLocal
-            rtcClient={rtcClient}
-            setRtcClient={setRtcClient}
-        />
-        <InputFormRemote
-            rtcClient={rtcClient}
-                    setRtcClient={setRtcClient}
-        />
+        <InputForms rtcClient = {rtcClient}/>
         <VideoArea
             rtcClient = {rtcClient}
         />

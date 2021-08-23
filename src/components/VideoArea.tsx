@@ -20,11 +20,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface Props {
-  rtcClient:RtcClient
+  rtcClient:RtcClient | null
 }
 
 const VideoArea: React.VFC<Props> = ({ rtcClient}) => {
   const classes = useStyles();
+
+  if(rtcClient === null) return <></>
 
   return (
     <div className={classes.root}>
