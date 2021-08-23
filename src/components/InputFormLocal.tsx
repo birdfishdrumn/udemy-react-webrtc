@@ -60,8 +60,9 @@ export default function SignIn({ rtcClient}:Props) {
 
   const initializeLocalPeer = useCallback(
     async (e) => {
-      rtcClient.setRtcClient()
-      rtcClient.localPeerName = name
+      rtcClient.startListening(name)
+      // rtcClient.setRtcClient()
+      // rtcClient.localPeerName = name
       e.preventDefault()
     },
     [name, rtcClient]
