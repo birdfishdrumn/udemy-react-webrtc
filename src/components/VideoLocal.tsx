@@ -1,29 +1,24 @@
 import React, { useRef, useEffect } from 'react'
 import Video from "./Video";
-type Constrains = {
-    audio: boolean;
-    video: boolean | {
-        width: number;
-        height: number;
-    };
-}
+import RtcClient from "src/utils/RtcClient";
+
+
 
 interface Props {
-  name: string
+  rtcClient: RtcClient
 
 }
 
-const VideoLocal:React.VFC<Props> = ({name}) => {
+const VideoLocal:React.VFC<Props> = ({rtcClient}) => {
   const videoRef = useRef()
-  const currentVideoRef:any = videoRef.current
+  const currentVideoRef: any = videoRef.current
+  const mediaStream = rtcClient.mediaStream
 
   useEffect(() => {
         if (currentVideoRef === null) return
     const getMedia = async(): Promise<void>  =>{
-    const constraints: Constrains = { video: true, audio: true }
 
     try {
-      const mediaStream:MediaStream = await navigator.mediaDevices.getUserMedia(constraints);
              currentVideoRef.srcObject= mediaStream
         /* ストリームを使用 */
     } catch (err) {
@@ -34,10 +29,10 @@ const VideoLocal:React.VFC<Props> = ({name}) => {
 
     getMedia()
 
-  }, [currentVideoRef])
+  }, [currentVideoRef,mediaStream])
 
   return (
-    <Video isLocal={true} name={name} videoRef={videoRef}/>
+    <Video isLocal={true} name={rtcClient.localPeerName} videoRef={videoRef}/>
   )
 }
 

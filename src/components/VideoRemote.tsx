@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import Video from "./Video";
+import RtcClient from "src/utils/RtcClient";
 type Constrains = {
     audio: boolean;
     video: boolean | {
@@ -9,16 +10,16 @@ type Constrains = {
 }
 
 interface Props {
-  name: string
+  rtcClient: RtcClient
 
 }
 
-const VideoRemote:React.VFC<Props> = ({name}) => {
+const VideoRemote:React.VFC<Props> = ({rtcClient}) => {
   const videoRef = null
 
 
   return (
-    <Video isLocal={false} name={name} videoRef={videoRef}/>
+    <Video isLocal={false} name={rtcClient.remotePeerName} videoRef={videoRef}/>
   )
 }
 

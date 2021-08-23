@@ -1,8 +1,18 @@
+
+type Constrains = {
+    audio: boolean;
+    video: boolean | {
+        width: number;
+        height: number;
+    };
+}
+
 export default class RtcClient {
   localPeerName: string
   remotePeerName: string
   rtcPeerConnection: any
-  _setRtcClient:(rtc:RtcClient) => any
+  _setRtcClient: (rtc: RtcClient) => any
+  mediaStream:MediaStream | null
   constructor(setRtcClient:(rtc:RtcClient) => any) {
     const config = {
       iceServers: [{
@@ -12,9 +22,20 @@ export default class RtcClient {
     this.localPeerName = ""
     this.remotePeerName = ""
     this._setRtcClient = setRtcClient;
+    this.mediaStream = null
   }
 
   setRtcClient() {
     this._setRtcClient(this)
+  }
+
+  async getUserMedia() {
+    try {
+        const constraints: Constrains = { video: true, audio: true }
+       this.mediaStream =  await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (error) {
+      console.error(error)
+    }
+
   }
 }
