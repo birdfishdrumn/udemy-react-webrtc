@@ -147,8 +147,13 @@ export default class RtcClient {
     this.setRtcClient() //rtcClientの情報を更新
   }
 
-  async setRemoteDescription(sessionDescription:RTCSessionDescription) {
-    await this.rtcPeerConnection.setRemoteDescription(sessionDescription)
+  async setRemoteDescription(sessionDescription: RTCSessionDescription) {
+    try {
+       await this.rtcPeerConnection.setRemoteDescription(sessionDescription)
+    }catch(e){
+      console.error(e)
+    }
+
   }
 
   async sendAnswer() {
@@ -159,6 +164,10 @@ export default class RtcClient {
 
     await this.firebaseSignallingClient.sendAnswer(this.localDescription)
   }
+
+  async saveReceivedSessionDescription(sessionDescription:RTCSessionDescription) {
+     await this.setRemoteDescription(sessionDescription)
+    }
 
   get localDescription() {
     // 誰が送信したかの詳細な情報が載っている。
@@ -174,9 +183,10 @@ export default class RtcClient {
   }
 
 //最初の名前が入力されたら実行される関数 inputFormLocalから実行
-  startListening(localPeerName:string) {
+  async startListening(localPeerName:string) {
     this.localPeerName = localPeerName;
     this.setRtcClient()
+    await this.firebaseSignallingClient.remove(localPeerName) //前回までのデータをremoveする
     // ここにシグナリングサーバーをリッスンする処理を追加する。
 this.firebaseSignallingClient.database
 .ref(localPeerName).on("value", async(snapshot) => {
@@ -187,6 +197,9 @@ this.firebaseSignallingClient.database
     case "offer":
       // answerを実行
       await  this.answer(sender,sessionDescription)
+      break
+    case "answer":
+     await this.saveReceivedSessionDescription(sessionDescription)
       break
     default:
       break;

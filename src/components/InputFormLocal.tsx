@@ -60,7 +60,7 @@ export default function SignIn({ rtcClient}:Props) {
 
   const initializeLocalPeer = useCallback(
     async (e) => {
-      rtcClient.startListening(name)
+     await  rtcClient.startListening(name)
       // rtcClient.setRtcClient()
       // rtcClient.localPeerName = name
       e.preventDefault()
@@ -88,14 +88,14 @@ export default function SignIn({ rtcClient}:Props) {
 
             onCompositionEnd={() => setIsComposed(false)}
             onCompositionStart={() => setIsComposed(true)}
-            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement> | any) => {
+            onKeyDown={async(e: React.KeyboardEvent<HTMLInputElement> | any) => {
 
               if (e.target.defaultValue === "") return
               console.log({ e })
               if (isComposed) return
               if (e.key === "Enter") {
 
-                initializeLocalPeer(e)
+               await  initializeLocalPeer(e)
 
               }
 
@@ -109,8 +109,8 @@ export default function SignIn({ rtcClient}:Props) {
             color="primary"
             disabled={disabled}
             fullWidth
-            onClick={(e) => {
-              initializeLocalPeer(e)
+            onClick={async(e) => {
+              await initializeLocalPeer(e)
 
             }}
             type="submit"
