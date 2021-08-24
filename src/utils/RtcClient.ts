@@ -175,6 +175,7 @@ export default class RtcClient {
     return this.rtcPeerConnection.localDescription?.toJSON()
   }
 
+  // dataにcandidateが含まれる場合に処理が走る
   async addIceCandidate(candidate: RTCIceCandidate) {
     try {
       const iceCandidate = new RTCIceCandidate(candidate)
