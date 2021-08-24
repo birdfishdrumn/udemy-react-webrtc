@@ -4,7 +4,8 @@ type Constrains = {
     audio: boolean;
     video: boolean | {
         width: number;
-        height: number;
+      height: number;
+
     };
 }
 

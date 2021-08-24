@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useRef} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Card,
@@ -6,16 +6,11 @@ import {
   CardActions,
   CardContent,
   Typography
-}  from '@material-ui/core';
+} from '@material-ui/core';
+import { useDimensions } from "src/components/hooks/useDimensions";
 
 
 const useStyles = makeStyles({
-  root: {
-    maxWidth: 345,
-  },
-  media: {
-    height: 140,
-  },
 });
 
 interface Props {
@@ -27,13 +22,18 @@ interface Props {
 const  Video:React.VFC<Props> = ({isLocal,name,videoRef}) => {
   const classes = useStyles();
 
+  const refCard = useRef(null)
+  const dimensionsCard = useDimensions(refCard)
+
+
   return (
-    <Card className={classes.root}>
+    <Card ref={refCard}>
       <CardActionArea>
           <video
         muted={isLocal} //自分の音声をミュートする
         autoPlay
-        ref={videoRef}
+          ref={videoRef}
+          width = {dimensionsCard.width}
       />
 
         <CardContent>
