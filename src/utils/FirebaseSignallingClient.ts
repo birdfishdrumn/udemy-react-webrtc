@@ -50,4 +50,12 @@ export default class FirebaseSignallingClient {
   async remove(path: string) {
     await this.database.ref(path).remove()
   }
+
+  async sendCandidate(candidate:RTCIceCandidateInit) {
+    await this.targetRef.set({
+      type: "candidate",
+      sender: this.localPeerName,
+      candidate
+    })
+  }
 }

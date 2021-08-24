@@ -156,6 +156,7 @@ export default class RtcClient {
 
   }
 
+  // シグナリングサーバーにデータを登録する
   async sendAnswer() {
     this.firebaseSignallingClient.setPeerNames(
       this.localPeerName,
@@ -174,10 +175,21 @@ export default class RtcClient {
     return this.rtcPeerConnection.localDescription?.toJSON()
   }
 
-  setOnicecandidateCallback() {
-    this.rtcPeerConnection.onicecandidate = (candidate:RTCPeerConnectionIceEvent) => {
+  async addIceCandidate(candidate: RTCIceCandidate) {
+    try {
+      const iceCandidate = new RTCIceCandidate(candidate)
+     await this.rtcPeerConnection.addIceCandidate(iceCandidate)
+   }catch(e){
+     console.error(e)
+   }
+
+  }
+
+   setOnicecandidateCallback() {
+     this.rtcPeerConnection.onicecandidate = async ({ candidate }) => {
       if (candidate) {
-        console.log({candidate})
+        console.log({ candidate })
+        await this.firebaseSignallingClient.sendCandidate(candidate.toJSON())
       }
     }
   }
@@ -192,7 +204,7 @@ this.firebaseSignallingClient.database
 .ref(localPeerName).on("value", async(snapshot) => {
   const data = snapshot.val()
   if (data === null) return
-  const { sender, sessionDescription, type } = data
+  const { candidate,sender, sessionDescription, type } = data
   switch (type) {
     case "offer":
       // answerを実行
@@ -201,7 +213,11 @@ this.firebaseSignallingClient.database
     case "answer":
      await this.saveReceivedSessionDescription(sessionDescription)
       break
+    case "candidate":
+      await this.addIceCandidate(candidate)
+      break
     default:
+      this.setRtcClient()
       break;
     }
   console.log({data})
