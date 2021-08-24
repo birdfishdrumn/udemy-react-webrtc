@@ -1,4 +1,4 @@
-import React,{useRef} from 'react'
+import React,{useRef,useState} from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Card,
@@ -8,7 +8,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { useDimensions } from "src/components/hooks/useDimensions";
-
+import VolumeButton from "./VolumeButton";
 
 const useStyles = makeStyles({
 });
@@ -19,18 +19,24 @@ interface Props {
   isLocal:boolean
 }
 
-const  Video:React.VFC<Props> = ({isLocal,name,videoRef}) => {
+type Dimensions = {
+  width: number;
+  height: number;
+}
+
+const Video: React.VFC<Props> = ({ isLocal, name, videoRef }) => {
+  const [muted,setMuted] = useState<boolean>(true)
   const classes = useStyles();
 
   const refCard = useRef(null)
-  const dimensionsCard = useDimensions(refCard)
+  const dimensionsCard:Dimensions = useDimensions(refCard)
 
 
   return (
     <Card ref={refCard}>
       <CardActionArea>
           <video
-        muted={isLocal} //自分の音声をミュートする
+        muted={isLocal || muted} //自分の音声をミュートする
         autoPlay
           ref={videoRef}
           width = {dimensionsCard.width}
@@ -44,6 +50,7 @@ const  Video:React.VFC<Props> = ({isLocal,name,videoRef}) => {
         </CardContent>
       </CardActionArea>
       <CardActions>
+        <VolumeButton muted={muted} setMuted={setMuted}/>
       </CardActions>
     </Card>
   );
