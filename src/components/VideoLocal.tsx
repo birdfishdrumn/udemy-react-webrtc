@@ -32,7 +32,10 @@ const VideoLocal:React.VFC<Props> = ({rtcClient}) => {
   }, [currentVideoRef,mediaStream])
 
   return (
-    <Video isLocal={true} name={rtcClient.localPeerName} videoRef={videoRef}/>
+    <Video isLocal={true}
+       rtcClient={rtcClient}
+      name={rtcClient.localPeerName}
+      videoRef={videoRef} />
   )
 }
 

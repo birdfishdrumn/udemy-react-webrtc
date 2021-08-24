@@ -13,7 +13,10 @@ const VideoRemote:React.VFC<Props> = ({rtcClient}) => {
 
 
   return (
-    <Video isLocal={false} name={rtcClient.remotePeerName} videoRef={videoRef}/>
+    <Video isLocal={false}
+         rtcClient={rtcClient}
+      name={rtcClient.remotePeerName}
+      videoRef={videoRef} />
   )
 }
 

@@ -9,6 +9,7 @@ type Constrains = {
     };
 }
 
+const INITIAL_AUDIO_ENABLED = false
 
 export default class RtcClient {
   localPeerName: string
@@ -35,6 +36,10 @@ export default class RtcClient {
     this.mediaStream = null
   }
 
+  get initialAudioMuted() {
+    return !INITIAL_AUDIO_ENABLED
+  }
+
   setRtcClient() {
     this._setRtcClient(this)
   }
@@ -57,19 +62,21 @@ export default class RtcClient {
   }
 
 
-
   addTracks() {
     this.addAudioTrack()
      this.addVideoTrack()
   }
 
   addAudioTrack() {
-    console.log({ tracks: this.mediaStream?.getAudioTracks() })
-    const audioTrack: MediaStreamTrack | undefined = this.mediaStream?.getAudioTracks()[0]
-    if (audioTrack && this.mediaStream) {
-      this.rtcPeerConnection.addTrack(audioTrack, this.mediaStream)
+    if (this.audioTrack && this.mediaStream) {
+      this.audioTrack.enabled = INITIAL_AUDIO_ENABLED
+      this.rtcPeerConnection.addTrack(this.audioTrack, this.mediaStream)
     }
   };
+
+  get audioTrack():MediaStreamTrack | undefined {
+    return this.mediaStream?.getAudioTracks()[0]
+  }
 
     addVideoTrack() {
       const videoTrack: MediaStreamTrack | undefined = this.mediaStream?.getVideoTracks()[0]
@@ -78,6 +85,14 @@ export default class RtcClient {
       }
   };
 
+
+  toggleAudio() {
+    if (this.audioTrack) {
+      this.audioTrack.enabled = !this.audioTrack.enabled
+      this.setRtcClient()
+    }
+
+  }
   async offer() {
     const sessionDescription = await this.createOffer()
     if (sessionDescription) {

@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { useDimensions } from "src/components/hooks/useDimensions";
 import VolumeButton from "./VolumeButton";
+import RtcClient from "src/utils/RtcClient"
 
 const useStyles = makeStyles({
 });
@@ -16,7 +17,8 @@ const useStyles = makeStyles({
 interface Props {
   name: string;
   videoRef: React.MutableRefObject<any> | null
-  isLocal:boolean
+  isLocal: boolean
+  rtcClient:RtcClient
 }
 
 type Dimensions = {
@@ -24,8 +26,8 @@ type Dimensions = {
   height: number;
 }
 
-const Video: React.VFC<Props> = ({ isLocal, name, videoRef }) => {
-  const [muted,setMuted] = useState<boolean>(true)
+const Video: React.VFC<Props> = ({ isLocal, name, videoRef,rtcClient }) => {
+  const [muted,setMuted] = useState<boolean>(rtcClient.initialAudioMuted)
   const classes = useStyles();
 
   const refCard = useRef(null)
@@ -50,7 +52,11 @@ const Video: React.VFC<Props> = ({ isLocal, name, videoRef }) => {
         </CardContent>
       </CardActionArea>
       <CardActions>
-        <VolumeButton muted={muted} setMuted={setMuted}/>
+        <VolumeButton
+          isLocal={isLocal}
+          muted={muted}
+        rtcClient = {rtcClient}
+          setMuted={setMuted} />
       </CardActions>
     </Card>
   );
