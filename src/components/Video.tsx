@@ -10,6 +10,7 @@ import {
 import { useDimensions } from "src/components/hooks/useDimensions";
 import VolumeButton from "./VolumeButton";
 import RtcClient from "src/utils/RtcClient"
+import AudioAnalyser from "./AudioAnalyser"
 
 const useStyles = makeStyles({
 });
@@ -32,6 +33,9 @@ const Video: React.VFC<Props> = ({ isLocal, name, videoRef,rtcClient }) => {
 
   const refCard = useRef(null)
   const dimensionsCard:Dimensions = useDimensions(refCard)
+  if (videoRef?.current) {
+    console.log({isLocal,srcObject: videoRef?.current.srcObject})
+}
 
 
   return (
@@ -57,6 +61,9 @@ const Video: React.VFC<Props> = ({ isLocal, name, videoRef,rtcClient }) => {
           muted={muted}
         rtcClient = {rtcClient}
           setMuted={setMuted} />
+        {!muted && videoRef?.current && videoRef?.current.srcObject &&
+          <AudioAnalyser audio={videoRef?.current.srcObject}/>
+        }
       </CardActions>
     </Card>
   );
