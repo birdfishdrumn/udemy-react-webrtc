@@ -1,5 +1,5 @@
 import React,{useRef,useState} from 'react'
-import { makeStyles } from '@material-ui/core/styles';
+
 import {
   Card,
   CardActionArea,
@@ -12,8 +12,6 @@ import VolumeButton from "./VolumeButton";
 import RtcClient from "src/utils/RtcClient"
 import AudioAnalyser from "./AudioAnalyser"
 
-const useStyles = makeStyles({
-});
 
 interface Props {
   name: string;
@@ -29,10 +27,12 @@ type Dimensions = {
 
 const Video: React.VFC<Props> = ({ isLocal, name, videoRef,rtcClient }) => {
   const [muted,setMuted] = useState<boolean>(rtcClient.initialAudioMuted)
-  const classes = useStyles();
+
 
   const refCard = useRef(null)
-  const dimensionsCard:Dimensions = useDimensions(refCard)
+  const dimensionsCard: Dimensions = useDimensions(refCard)
+  const refVolumeButton = useRef(null)
+  const dimensionsVolumeButton = useDimensions(refVolumeButton)
   if (videoRef?.current) {
     console.log({isLocal,srcObject: videoRef?.current.srcObject})
 }
@@ -57,12 +57,15 @@ const Video: React.VFC<Props> = ({ isLocal, name, videoRef,rtcClient }) => {
       </CardActionArea>
       <CardActions>
         <VolumeButton
+          refVolumeButton={refVolumeButton}
           isLocal={isLocal}
           muted={muted}
         rtcClient = {rtcClient}
           setMuted={setMuted} />
         {!muted && videoRef?.current && videoRef?.current.srcObject &&
-          <AudioAnalyser audio={videoRef?.current.srcObject}/>
+          <AudioAnalyser audio={videoRef?.current.srcObject}
+          width={dimensionsCard.width - dimensionsVolumeButton.width -40}
+        />
         }
       </CardActions>
     </Card>
