@@ -11,6 +11,7 @@ interface Props {
 const VideoRemote:React.VFC<Props> = ({rtcClient}) => {
   const videoRef = rtcClient.remoteVideoRef
 
+    if(rtcClient.remotePeerName === "") return <></>
 
   return (
     <Video isLocal={false}

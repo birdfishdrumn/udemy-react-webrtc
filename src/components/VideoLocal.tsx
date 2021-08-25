@@ -31,6 +31,10 @@ const VideoLocal:React.VFC<Props> = ({rtcClient}) => {
 
   }, [currentVideoRef,mediaStream])
 
+  console.log({rtcClient})
+
+  if(rtcClient.localPeerName === "" || rtcClient.remotePeerName === "") return <></>
+
   return (
     <Video isLocal={true}
        rtcClient={rtcClient}
